@@ -73,7 +73,6 @@ void MQTT::onReceive(char *topic, byte *payload, size_t length)
 
                     // construct protobuf data packet using TEXT_MESSAGE, send it to the mesh
                     meshtastic_MeshPacket *p = router->allocForSending();
-                    p->via_mqtt = true; // Mark that the packet was sent via MQTT
                     p->decoded.portnum = meshtastic_PortNum_TEXT_MESSAGE_APP;
                     p->channel = sendChannel.index;
                     if (sendChannel.settings.downlink_enabled) {
@@ -108,7 +107,6 @@ void MQTT::onReceive(char *topic, byte *payload, size_t length)
 
                     // construct protobuf data packet using POSITION, send it to the mesh
                     meshtastic_MeshPacket *p = router->allocForSending();
-                    p->via_mqtt = true; // Mark that the packet was sent via MQTT
                     p->decoded.portnum = meshtastic_PortNum_POSITION_APP;
                     p->channel = sendChannel.index;
                     if (sendChannel.settings.downlink_enabled) {
@@ -144,7 +142,7 @@ void MQTT::onReceive(char *topic, byte *payload, size_t length)
                 if (strcmp(e.channel_id, channels.getGlobalId(ch.index)) == 0 && e.packet && ch.settings.downlink_enabled) {
                     LOG_INFO("Received MQTT topic %s, len=%u\n", topic, length);
                     meshtastic_MeshPacket *p = packetPool.allocCopy(*e.packet);
-                    p->via_mqtt = true; // Mark that the packet was sent via MQTT
+                    p->via_mqtt = true; // Mark that the packet was received via MQTT
 
                     if (p->which_payload_variant == meshtastic_MeshPacket_decoded_tag) {
                         p->channel = ch.index;
@@ -482,7 +480,6 @@ void MQTT::onSend(const meshtastic_MeshPacket &mp, ChannelIndex chIndex)
         env->channel_id = (char *)channelId;
         env->gateway_id = owner.id;
         env->packet = (meshtastic_MeshPacket *)&mp;
-        env->packet->via_mqtt = true; // Mark that the packet was sent via MQTT
         LOG_DEBUG("MQTT onSend - Publishing portnum %i message\n", env->packet->decoded.portnum);
 
         if (moduleConfig.mqtt.proxy_to_client_enabled || this->isConnectedDirectly()) {

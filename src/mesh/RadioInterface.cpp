@@ -294,7 +294,7 @@ void printPacket(const char *prefix, const meshtastic_MeshPacket *p)
     if (p->rx_rssi != 0)
         out += DEBUG_PORT.mt_sprintf(" rxRSSI=%i", p->rx_rssi);
     if (p->via_mqtt != 0)
-        out += DEBUG_PORT.mt_sprintf(" viaMQTT");
+        out += DEBUG_PORT.mt_sprintf(" via MQTT");
     if (p->priority != 0)
         out += DEBUG_PORT.mt_sprintf(" priority=%d", p->priority);
 
