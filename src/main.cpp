@@ -145,6 +145,10 @@ ExtensionIOXL9555 io;
 extern void tftSetup(void);
 #endif
 
+#if USE_SECONDARY_CORE
+extern void core0setup(void);
+#endif
+
 #ifdef HAS_UDP_MULTICAST
 #include "mesh/udp/UdpMulticastHandler.h"
 UdpMulticastHandler *udpHandler = nullptr;
@@ -1161,6 +1165,11 @@ void setup()
     if (screen_found.port != ScanI2C::I2CPort::NO_I2C && screen)
         screen->setup();
 #endif
+#endif
+
+#if USE_SECONDARY_CORE
+    config.bluetooth.enabled = false; // We're using PacketAPI on secondary core, so disable BLE
+    core0setup();
 #endif
 
 #ifdef PIN_PWR_DELAY_MS
