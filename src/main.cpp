@@ -119,6 +119,10 @@ AudioThread *audioThread = nullptr;
 extern void tftSetup(void);
 #endif
 
+#if USE_SECONDARY_CORE
+extern void core0setup(void);
+#endif
+
 #ifdef HAS_UDP_MULTICAST
 #include "mesh/udp/UdpMulticastThread.h"
 UdpMulticastThread *udpThread = nullptr;
@@ -860,6 +864,11 @@ void setup()
     if (screen_found.port != ScanI2C::I2CPort::NO_I2C)
         screen->setup();
 #endif
+#endif
+
+#if USE_SECONDARY_CORE
+    config.bluetooth.enabled = false; // We're using PacketAPI on secondary core, so disable BLE
+    core0setup();
 #endif
 
     screen->print("Started...\n");
