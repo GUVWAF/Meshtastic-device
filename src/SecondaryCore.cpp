@@ -1,5 +1,8 @@
-#include "SecondaryCore.h"
-#include "esp_task_wdt.h"
+#ifdef USE_SECONDARY_CORE
+#include "Arduino.h"
+#include "api/comms/PacketController.h"
+
+PacketController *packetController = nullptr;
 
 // Handle received text messages here
 void textMessageHandler(meshtastic_MeshPacket p)
@@ -11,37 +14,33 @@ void textMessageHandler(meshtastic_MeshPacket p)
     Serial.println();
 }
 
-void core0loop(void *parameter)
+// Handle received generic packets here
+void genericPacketHandler(meshtastic_MeshPacket p)
 {
-    while (true) {
-        receivePackets();
+    Serial.print("Received packet with port number ");
+    Serial.print(p.decoded.portnum);
+    Serial.println();
+}
 
-        // Send a packet every 60 seconds
-        static uint32_t lastSend = 0;
-        if (millis() - lastSend > 60000) {
+void loop0()
+{
+    // Send a packet every 60 seconds
+    static uint32_t lastSend = 0;
+    if (millis() - lastSend > 60000) {
 
-            Serial.println("Sending Hello World packet");
-            sendTextMessage("Hello World!");
+        Serial.println("Sending Hello World packet");
+        packetController->sendTextMessage("Hello World!");
 
-            lastSend = millis();
-        }
-
-        esp_task_wdt_reset(); // Reset watchdog
-        delay(10);
+        lastSend = millis();
     }
 }
 
-void core0setup(void)
+void setup0(void)
 {
-    Serial.println("Starting secondary core");
-    PacketAPI::create(PacketServer::init());
-    packetClient = new PacketClient();
-    packetClient->init();
-    // Initial connection with API
-    packetClient->send(meshtastic_ToRadio{.which_payload_variant = meshtastic_ToRadio_want_config_id_tag, .want_config_id = 1});
+    packetController = new PacketController(loop0);
 
-    // Set callback for text messages
-    textMessageCallback = textMessageHandler;
-
-    xTaskCreatePinnedToCore(core0loop, "core0", 8192, NULL, 1, NULL, 0);
+    // Setup the text message and generic packet handlers
+    packetController->setTextMessageCallback(textMessageHandler);
+    packetController->setGenericPacketCallback(genericPacketHandler);
 }
+#endif

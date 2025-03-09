@@ -146,7 +146,7 @@ extern void tftSetup(void);
 #endif
 
 #if USE_SECONDARY_CORE
-extern void core0setup(void);
+extern void setup0(void);
 #endif
 
 #ifdef HAS_UDP_MULTICAST
@@ -1169,7 +1169,7 @@ void setup()
 
 #if USE_SECONDARY_CORE
     config.bluetooth.enabled = false; // We're using PacketAPI on secondary core, so disable BLE
-    core0setup();
+    setup0();
 #endif
 
 #ifdef PIN_PWR_DELAY_MS

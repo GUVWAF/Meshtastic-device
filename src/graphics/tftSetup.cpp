@@ -4,8 +4,8 @@
 #include "sleep.h"
 
 #include "api/PacketAPI.h"
-#include "comms/PacketClient.h"
-#include "comms/PacketServer.h"
+#include "api/comms/PacketClient.h"
+#include "api/comms/PacketServer.h"
 #include "graphics/DeviceScreen.h"
 #include "graphics/driver/DisplayDriverConfig.h"
 

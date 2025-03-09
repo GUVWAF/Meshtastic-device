@@ -1,6 +1,6 @@
 #ifdef USE_PACKET_API
 
-#include "api/PacketAPI.h"
+#include "PacketAPI.h"
 #include "MeshService.h"
 #include "PowerFSM.h"
 #include "RadioInterface.h"
